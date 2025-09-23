@@ -688,3 +688,289 @@
         font-size: 2.5rem;
     }
 }
+
+/* About Page Specific Styles */
+.about-header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: var(--white);
+    padding: var(--spacing-xxl) 0;
+    text-align: center;
+}
+
+.about-header-content h1 {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.about-header-content p {
+    font-size: 1.3rem;
+    opacity: 0.9;
+}
+
+.company-story {
+    padding: var(--spacing-xxl) 0;
+}
+
+.story-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--spacing-xl);
+    align-items: center;
+}
+
+.story-text h2 {
+    color: var(--primary);
+    margin-bottom: var(--spacing-lg);
+    font-size: 2.5rem;
+}
+
+.story-text p {
+    margin-bottom: var(--spacing-lg);
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+.story-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
+}
+
+.story-stat {
+    text-align: center;
+    padding: var(--spacing-lg);
+    background: var(--light);
+    border-radius: var(--radius-lg);
+}
+
+.story-stat .stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.story-stat .stat-label {
+    color: var(--gray);
+    font-weight: 500;
+}
+
+.story-image .image-placeholder {
+    height: 400px;
+}
+
+.mission-values {
+    background: var(--light);
+    padding: var(--spacing-xxl) 0;
+}
+
+.values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-xl);
+    margin-top: var(--spacing-xl);
+}
+
+.value-card {
+    background: var(--white);
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.value-card:hover {
+    transform: translateY(-5px);
+}
+
+.value-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--spacing-lg);
+    color: var(--white);
+    font-size: 2rem;
+}
+
+.value-card h3 {
+    color: var(--primary);
+    margin-bottom: var(--spacing-md);
+}
+
+.value-card ul {
+    list-style: none;
+    text-align: left;
+}
+
+.value-card li {
+    padding: var(--spacing-xs) 0;
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.value-card li:last-child {
+    border-bottom: none;
+}
+
+.value-card li::before {
+    content: "✓";
+    color: var(--secondary);
+    font-weight: bold;
+    margin-right: var(--spacing-sm);
+}
+
+.team {
+    padding: var(--spacing-xxl) 0;
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-xl);
+    margin-top: var(--spacing-xl);
+}
+
+.team-member {
+    text-align: center;
+    padding: var(--spacing-lg);
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    transition: transform 0.3s ease;
+}
+
+.team-member:hover {
+    transform: translateY(-5px);
+}
+
+.member-photo {
+    width: 120px;
+    height: 120px;
+    background: var(--light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--spacing-lg);
+    color: var(--primary);
+    font-size: 3rem;
+}
+
+.team-member h3 {
+    color: var(--dark);
+    margin-bottom: var(--spacing-xs);
+}
+
+.member-role {
+    color: var(--primary);
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+}
+
+.member-bio {
+    color: var(--gray);
+    line-height: 1.6;
+}
+
+.why-choose-us {
+    background: var(--light);
+    padding: var(--spacing-xxl) 0;
+}
+
+.advantages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-xl);
+    margin-top: var(--spacing-xl);
+}
+
+.advantage {
+    text-align: center;
+    padding: var(--spacing-lg);
+}
+
+.advantage i {
+    font-size: 3rem;
+    color: var(--primary);
+    margin-bottom: var(--spacing-lg);
+}
+
+.advantage h3 {
+    color: var(--dark);
+    margin-bottom: var(--spacing-md);
+}
+
+.advantage p {
+    color: var(--gray);
+    line-height: 1.6;
+}
+
+/* Responsive Design for About Page */
+@media (max-width: 992px) {
+    .story-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .story-image {
+        order: -1;
+    }
+    
+    .story-image .image-placeholder {
+        height: 300px;
+    }
+    
+    .story-stats {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+}
+
+@media (max-width: 768px) {
+    .about-header-content h1 {
+        font-size: 2.5rem;
+    }
+    
+    .about-header-content p {
+        font-size: 1.1rem;
+    }
+    
+    .story-text h2 {
+        font-size: 2rem;
+    }
+    
+    .values-grid,
+    .team-grid,
+    .advantages-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .value-card,
+    .team-member {
+        padding: var(--spacing-lg);
+    }
+}
+
+@media (max-width: 576px) {
+    .about-header-content h1 {
+        font-size: 2rem;
+    }
+    
+    .story-stat .stat-number {
+        font-size: 2rem;
+    }
+    
+    .member-photo {
+        width: 100px;
+        height: 100px;
+        font-size: 2.5rem;
+    }
+    
+    .advantage i {
+        font-size: 2.5rem;
+    }
+}
