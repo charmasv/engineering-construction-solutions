@@ -7,9 +7,9 @@ document.addEventListener('DOMContentLoaded', function() {
     initScrollAnimations();
     initStatsCounter();
     initServiceNavigation();
+    initContactForm();
+    initSmoothScroll();
     scrollToFragment();
-    
-    // Add any other initializations here
 });
 
 // Mobile Navigation
@@ -107,8 +107,8 @@ function initStatsCounter() {
             if (entry.isIntersecting) {
                 const statNumber = entry.target;
                 const target = parseInt(statNumber.getAttribute('data-count'));
-                const duration = 2000; // 2 seconds
-                const increment = target / (duration / 16); // 60fps
+                const duration = 2000;
+                const increment = target / (duration / 16);
                 let current = 0;
                 
                 const timer = setInterval(() => {
@@ -142,9 +142,9 @@ function initServiceNavigation() {
             const targetSection = document.querySelector(targetId);
             
             if (targetSection) {
-                // Calculate the scroll position considering the fixed header
                 const headerHeight = document.querySelector('.navbar').offsetHeight;
-                const servicesNavHeight = document.querySelector('.services-nav').offsetHeight;
+                const servicesNav = document.querySelector('.services-nav');
+                const servicesNavHeight = servicesNav ? servicesNav.offsetHeight : 0;
                 const totalOffset = headerHeight + servicesNavHeight + 20;
                 
                 const targetPosition = targetSection.offsetTop - totalOffset;
@@ -154,11 +154,183 @@ function initServiceNavigation() {
                     behavior: 'smooth'
                 });
                 
-                // Update URL hash without scrolling
                 history.pushState(null, null, targetId);
             }
         });
     });
+}
+
+// Contact Form Handling
+function initContactForm() {
+    const contactForm = document.getElementById('contact-form');
+    
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (validateContactForm()) {
+                submitContactForm();
+            }
+        });
+        
+        // Real-time validation
+        const inputs = contactForm.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                validateField(this);
+            });
+            
+            input.addEventListener('input', function() {
+                clearFieldError(this);
+            });
+        });
+    }
+}
+
+// Validate individual field
+function validateField(field) {
+    const value = field.value.trim();
+    let isValid = true;
+    
+    clearFieldError(field);
+    
+    if (field.hasAttribute('required') && !value) {
+        showFieldError(field, 'This field is required');
+        isValid = false;
+    }
+    
+    if (field.type === 'email' && value) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+            showFieldError(field, 'Please enter a valid email address');
+            isValid = false;
+        }
+    }
+    
+    if (field.type === 'tel' && value) {
+        const phoneRegex = /^[\+]?[0-9\s\-\(\)]{10,}$/;
+        if (!phoneRegex.test(value)) {
+            showFieldError(field, 'Please enter a valid phone number');
+            isValid = false;
+        }
+    }
+    
+    return isValid;
+}
+
+// Show field error
+function showFieldError(field, message) {
+    field.classList.add('error');
+    
+    const existingError = field.parentNode.querySelector('.field-error');
+    if (existingError) {
+        existingError.remove();
+    }
+    
+    const errorElement = document.createElement('div');
+    errorElement.className = 'field-error';
+    errorElement.style.color = '#dc3545';
+    errorElement.style.fontSize = '0.875rem';
+    errorElement.style.marginTop = '0.25rem';
+    errorElement.textContent = message;
+    
+    field.parentNode.appendChild(errorElement);
+}
+
+// Clear field error
+function clearFieldError(field) {
+    field.classList.remove('error');
+    const errorElement = field.parentNode.querySelector('.field-error');
+    if (errorElement) {
+        errorElement.remove();
+    }
+}
+
+// Validate entire form
+function validateContactForm() {
+    const contactForm = document.getElementById('contact-form');
+    if (!contactForm) return false;
+    
+    const inputs = contactForm.querySelectorAll('input[required], select[required], textarea[required]');
+    let isValid = true;
+    
+    inputs.forEach(input => {
+        if (!validateField(input)) {
+            isValid = false;
+        }
+    });
+    
+    return isValid;
+}
+
+// Submit contact form
+function submitContactForm() {
+    const contactForm = document.getElementById('contact-form');
+    if (!contactForm) return;
+    
+    const submitButton = contactForm.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton.textContent;
+    
+    submitButton.textContent = 'Sending...';
+    submitButton.disabled = true;
+    contactForm.classList.add('form-loading');
+    
+    setTimeout(() => {
+        contactForm.classList.remove('form-loading');
+        submitButton.textContent = originalButtonText;
+        submitButton.disabled = false;
+        
+        showFormSuccess('Thank you for your message! We will get back to you within 24 hours.');
+        contactForm.reset();
+        
+        const successMessage = document.querySelector('.form-success');
+        if (successMessage) {
+            successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, 2000);
+}
+
+// Show form success message
+function showFormSuccess(message) {
+    const existingSuccess = document.querySelector('.form-success');
+    if (existingSuccess) {
+        existingSuccess.remove();
+    }
+    
+    const successElement = document.createElement('div');
+    successElement.className = 'form-success show';
+    successElement.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+    
+    if (!document.querySelector('#form-success-styles')) {
+        const styles = document.createElement('style');
+        styles.id = 'form-success-styles';
+        styles.textContent = `
+            .form-success {
+                background: #d4edda;
+                color: #155724;
+                padding: 1rem;
+                border-radius: 0.5rem;
+                margin-bottom: 1.5rem;
+                border: 1px solid #c3e6cb;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            .form-success i {
+                color: #155724;
+            }
+        `;
+        document.head.appendChild(styles);
+    }
+    
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+        contactForm.parentNode.insertBefore(successElement, contactForm);
+        
+        setTimeout(() => {
+            successElement.remove();
+        }, 5000);
+    }
 }
 
 // Fragment identifier navigation
@@ -166,11 +338,10 @@ function scrollToFragment() {
     if (window.location.hash) {
         const target = document.querySelector(window.location.hash);
         if (target) {
-            // Small timeout to ensure DOM is fully rendered
             setTimeout(() => {
-                // Calculate the scroll position considering the fixed header
                 const headerHeight = document.querySelector('.navbar').offsetHeight;
-                const servicesNavHeight = document.querySelector('.services-nav') ? document.querySelector('.services-nav').offsetHeight : 0;
+                const servicesNav = document.querySelector('.services-nav');
+                const servicesNavHeight = servicesNav ? servicesNav.offsetHeight : 0;
                 const totalOffset = headerHeight + servicesNavHeight + 20;
                 
                 const targetPosition = target.offsetTop - totalOffset;
@@ -187,43 +358,26 @@ function scrollToFragment() {
 // Listen for hash changes
 window.addEventListener('hashchange', scrollToFragment);
 
-// Form handling (for future contact form)
-function handleFormSubmit(formId) {
-    const form = document.getElementById(formId);
-    
-    if (form) {
-        form.addEventListener('submit', function(e) {
+// Smooth scroll for anchor links
+function initSmoothScroll() {
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            
-            // Basic form validation
-            let isValid = true;
-            const inputs = form.querySelectorAll('input[required], textarea[required]');
-            
-            inputs.forEach(input => {
-                if (!input.value.trim()) {
-                    isValid = false;
-                    input.classList.add('error');
-                } else {
-                    input.classList.remove('error');
-                }
-            });
-            
-            if (isValid) {
-                // Here you would typically send the form data to a server
-                // For now, we'll just show a success message
-                alert('Thank you for your message! We will get back to you soon.');
-                form.reset();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                const headerHeight = document.querySelector('.navbar').offsetHeight;
+                const targetPosition = target.offsetTop - headerHeight;
+                
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
             }
         });
-    }
+    });
 }
 
-// Initialize any forms on the page
-document.addEventListener('DOMContentLoaded', function() {
-    handleFormSubmit('contact-form');
-});
-
-// Utility function for debouncing (for scroll events)
+// Utility function for debouncing
 function debounce(func, wait, immediate) {
     let timeout;
     return function() {
@@ -236,18 +390,5 @@ function debounce(func, wait, immediate) {
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
         if (callNow) func.apply(context, args);
-    };
-}
-
-// Export functions for use in other modules (if needed)
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        initMobileNavigation,
-        initScrollAnimations,
-        initStatsCounter,
-        initServiceNavigation,
-        scrollToFragment,
-        handleFormSubmit,
-        debounce
     };
 }
