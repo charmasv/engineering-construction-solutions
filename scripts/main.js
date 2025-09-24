@@ -263,7 +263,7 @@ function validateContactForm() {
     return isValid;
 }
 
-// Submit contact form
+// Submit contact form (Formspree version)
 function submitContactForm() {
     const contactForm = document.getElementById('contact-form');
     if (!contactForm) return;
@@ -275,18 +275,15 @@ function submitContactForm() {
     submitButton.disabled = true;
     contactForm.classList.add('form-loading');
     
+    // Formspree will handle the submission, we just show success
+    showFormSuccess('Thank you for your message! We will get back to you within 24 hours.');
+    
+    // Reset form after a delay
     setTimeout(() => {
         contactForm.classList.remove('form-loading');
         submitButton.textContent = originalButtonText;
         submitButton.disabled = false;
-        
-        showFormSuccess('Thank you for your message! We will get back to you within 24 hours.');
         contactForm.reset();
-        
-        const successMessage = document.querySelector('.form-success');
-        if (successMessage) {
-            successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
     }, 2000);
 }
 
