@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initContactForm();
     initSmoothScroll();
     scrollToFragment();
+    initAllAnimations();
 });
 
 // Mobile Navigation
