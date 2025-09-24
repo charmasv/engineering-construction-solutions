@@ -53,7 +53,7 @@ function initMobileNavigation() {
 // Scroll Animations
 function initScrollAnimations() {
     // Animate elements on scroll
-    const animatedElements = document.querySelectorAll('.service-card, .feature-item, .stat-item');
+    const animatedElements = document.querySelectorAll('.service-card, .feature-item, .stat-item, .value-card, .team-member, .advantage, .faq-item');
     
     const observerOptions = {
         threshold: 0.1,
@@ -160,7 +160,7 @@ function initServiceNavigation() {
     });
 }
 
-// Contact Form Handling
+// Contact Form Handling for Formspree
 function initContactForm() {
     const contactForm = document.getElementById('contact-form');
     
@@ -169,7 +169,7 @@ function initContactForm() {
             e.preventDefault();
             
             if (validateContactForm()) {
-                submitContactForm();
+                submitContactFormToFormspree();
             }
         });
         
@@ -263,69 +263,88 @@ function validateContactForm() {
     return isValid;
 }
 
-// Submit contact form (Formspree version)
-function submitContactForm() {
+// Submit to Formspree
+function submitContactFormToFormspree() {
     const contactForm = document.getElementById('contact-form');
-    if (!contactForm) return;
-    
     const submitButton = contactForm.querySelector('button[type="submit"]');
     const originalButtonText = submitButton.textContent;
+    const messagesDiv = document.getElementById('formspree-messages');
     
     submitButton.textContent = 'Sending...';
     submitButton.disabled = true;
     contactForm.classList.add('form-loading');
     
-    // Formspree will handle the submission, we just show success
-    showFormSuccess('Thank you for your message! We will get back to you within 24 hours.');
+    // Clear previous messages
+    if (messagesDiv) {
+        messagesDiv.style.display = 'none';
+        messagesDiv.innerHTML = '';
+        messagesDiv.className = '';
+    }
     
-    // Reset form after a delay
-    setTimeout(() => {
+    // Create FormData object
+    const formData = new FormData(contactForm);
+    
+    // Submit to Formspree
+    fetch(contactForm.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            // Success
+            showFormspreeMessage('Thank you! Your message has been sent successfully. We will get back to you within 24 hours.', 'success');
+            contactForm.reset();
+        } else {
+            // Error
+            response.json().then(data => {
+                if (data.errors) {
+                    showFormspreeMessage('There was an error with your submission: ' + data.errors.map(error => error.message).join(', '), 'error');
+                } else {
+                    showFormspreeMessage('There was a problem sending your message. Please try again.', 'error');
+                }
+            });
+        }
+    })
+    .catch(error => {
+        showFormspreeMessage('There was a network error. Please check your connection and try again.', 'error');
+    })
+    .finally(() => {
         contactForm.classList.remove('form-loading');
         submitButton.textContent = originalButtonText;
         submitButton.disabled = false;
-        contactForm.reset();
-    }, 2000);
+    });
 }
 
-// Show form success message
-function showFormSuccess(message) {
-    const existingSuccess = document.querySelector('.form-success');
-    if (existingSuccess) {
-        existingSuccess.remove();
+// Show Formspree messages
+function showFormspreeMessage(message, type) {
+    const messagesDiv = document.getElementById('formspree-messages');
+    if (!messagesDiv) return;
+    
+    messagesDiv.innerHTML = `
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+        ${message}
+    `;
+    
+    messagesDiv.className = type;
+    messagesDiv.style.display = 'block';
+    
+    if (type === 'success') {
+        messagesDiv.style.background = '#d4edda';
+        messagesDiv.style.color = '#155724';
+        messagesDiv.style.border = '1px solid #c3e6cb';
+    } else {
+        messagesDiv.style.background = '#f8d7da';
+        messagesDiv.style.color = '#721c24';
+        messagesDiv.style.border = '1px solid #f5c6cb';
     }
     
-    const successElement = document.createElement('div');
-    successElement.className = 'form-success show';
-    successElement.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
-    
-    if (!document.querySelector('#form-success-styles')) {
-        const styles = document.createElement('style');
-        styles.id = 'form-success-styles';
-        styles.textContent = `
-            .form-success {
-                background: #d4edda;
-                color: #155724;
-                padding: 1rem;
-                border-radius: 0.5rem;
-                margin-bottom: 1.5rem;
-                border: 1px solid #c3e6cb;
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-            }
-            .form-success i {
-                color: #155724;
-            }
-        `;
-        document.head.appendChild(styles);
-    }
-    
-    const contactForm = document.getElementById('contact-form');
-    if (contactForm) {
-        contactForm.parentNode.insertBefore(successElement, contactForm);
-        
+    // Auto-hide success messages after 5 seconds
+    if (type === 'success') {
         setTimeout(() => {
-            successElement.remove();
+            messagesDiv.style.display = 'none';
         }, 5000);
     }
 }
